@@ -50,10 +50,16 @@ A full-stack user authentication and management system built using Java Servlets
 ---
 
 ## 📸 Screenshots
+## 📸 Screenshots
 
-*(Add screenshots here later)*
+### 🔐 Login Page
+![Login](login.png)
 
----
+### 📝 Signup Page
+![Signup](signup.png)
+
+### 🔑 Forgot Password
+![Forgot Password](forgetpassword.png)
 
 ## 📌 Future Improvements
 
