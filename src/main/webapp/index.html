@@ -4,75 +4,171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login & Signup</title>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="wrapper" id="wrapper">
+<div class="container login-mode">
 
-    <!-- LOGIN -->
-    <div class="form-panel login-panel">
-        <div class="form-box">
+    <!-- LEFT SIDE -->
+    <div class="form-section">
 
-            <h1>Welcome Back</h1>
-            <p>Sign in to your account</p>
+        <!-- LOGIN -->
+        <div class="form-container active" id="loginForm">
+            <h1 class="form-title">Welcome Back</h1>
+            <p class="form-subtitle">Sign in to your account to continue your journey</p>
 
-            <form action="login" method="post">
+            <form id="loginFormSubmit">
                 <div class="form-group">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="email" class="form-control" placeholder="Email Address" required>
                 </div>
 
                 <div class="form-group">
                     <i class="fas fa-lock"></i>
-                    <input type="password" name="password" placeholder="Password" required>
+                    <input type="password" class="form-control" placeholder="Password" required>
                 </div>
 
-                <!-- FIXED -->
-                <div class="forgot-row">
-                    <a href="#" id="forgotLink">Forgot Password?</a>
+                <div class="forgot-password">
+                    <a href="#" onclick="showForgotPassword(); return false;">Forgot Password?</a>
                 </div>
 
-                <!-- HIDDEN BOX -->
-                <div id="forgotBox" style="display:none;">
-                    <input type="email" id="forgotEmail" placeholder="Enter email">
-                    <button type="button" id="sendResetBtn">Send</button>
-                </div>
-
-                <button type="submit">Sign In</button>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-spinner loading"></i>
+                    <span class="btn-text">Sign In</span>
+                </button>
             </form>
 
-            <p>Don't have an account? <a id="goToSignup">Create one</a></p>
+            <div class="social-login">
+                <p class="social-title">Or continue with</p>
+                <div class="social-buttons">
+                    <button class="social-btn google" onclick="socialLogin('Google')">
+                        <i class="fab fa-google"></i>
+                    </button>
+                    <button class="social-btn facebook" onclick="socialLogin('Facebook')">
+                        <i class="fab fa-facebook"></i>
+                    </button>
+                    <button class="social-btn twitter" onclick="socialLogin('Twitter')">
+                        <i class="fab fa-twitter"></i>
+                    </button>
+                </div>
+            </div>
 
+            <div class="form-switch">
+                Don't have an account? <a href="#" onclick="showSignup(); return false;">Create one</a>
+            </div>
         </div>
-    </div>
 
-    <!-- SIGNUP -->
-    <div class="form-panel signup-panel">
-        <div class="form-box">
+        <!-- SIGNUP -->
+        <div class="form-container" id="signupForm">
+            <h1 class="form-title">Create Account</h1>
+            <p class="form-subtitle">Join thousands of users and start your journey today</p>
 
-            <h1>Create Account</h1>
+            <form id="signupFormSubmit">
+                <div class="form-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" class="form-control" placeholder="Full Name" required>
+                </div>
 
-            <div id="signupError"></div>
+                <div class="form-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" class="form-control" placeholder="Email Address" required>
+                </div>
 
-            <form action="register" method="post" id="signupForm">
-                <input type="text" name="name" placeholder="Name" required>
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+                <div class="form-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-control" placeholder="Password" required>
+                </div>
 
-                <button type="submit">Create</button>
+                <div class="form-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-control" placeholder="Confirm Password" required>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">
+                        I agree to the
+                        <a href="#">Terms of Service</a> and
+                        <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-spinner loading"></i>
+                    <span class="btn-text">Create Account</span>
+                </button>
             </form>
 
-            <p>Already have an account? <a id="goToLogin">Login</a></p>
+            <div class="social-login">
+                <p class="social-title">Or sign up with</p>
+                <div class="social-buttons">
+                    <button class="social-btn google" onclick="socialLogin('Google')">
+                        <i class="fab fa-google"></i>
+                    </button>
+                    <button class="social-btn facebook" onclick="socialLogin('Facebook')">
+                        <i class="fab fa-facebook"></i>
+                    </button>
+                    <button class="social-btn twitter" onclick="socialLogin('Twitter')">
+                        <i class="fab fa-twitter"></i>
+                    </button>
+                </div>
+            </div>
 
+            <div class="form-switch">
+                Already have an account? <a href="#" onclick="showLogin(); return false;">Sign in</a>
+            </div>
         </div>
+
+        <!-- FORGOT -->
+        <div class="form-container" id="forgotForm">
+            <h1 class="form-title">Reset Password</h1>
+            <p class="form-subtitle">Enter your email address and we'll send you reset instructions</p>
+
+            <form id="forgotFormSubmit">
+                <div class="form-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" class="form-control" placeholder="Email Address" required>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-spinner loading"></i>
+                    <span class="btn-text">Send Reset Instructions</span>
+                </button>
+            </form>
+
+            <div class="form-switch">
+                <a href="#" onclick="showLogin(); return false;">&#8592; Back to login</a>
+            </div>
+        </div>
+
     </div>
 
-    <div class="overlay-panel">
-        <div id="overlayContent"></div>
+    <!-- RIGHT SIDE -->
+    <div class="image-section">
+        <div class="floating-shapes"></div>
+
+        <!-- LOGIN PANEL -->
+        <div class="image-content login-content">
+            <div class="panel-icon"><i class="fas fa-user-circle"></i></div>
+            <h2>Welcome Back!</h2>
+            <p>Sign in to access your account and pick up right where you left off.</p>
+        </div>
+
+        <!-- SIGNUP PANEL -->
+        <div class="image-content signup-content">
+            <div class="panel-icon"><i class="fas fa-rocket"></i></div>
+            <h2>Hello, Friend!</h2>
+            <p>Enter your personal details and start your journey with us today.</p>
+        </div>
+
+        <!-- FORGOT PANEL -->
+        <div class="image-content forgot-content">
+            <div class="panel-icon"><i class="fas fa-key"></i></div>
+            <h2>Don't Worry!</h2>
+            <p>We'll help you reset your password quickly and securely.</p>
+        </div>
     </div>
 
 </div>

@@ -15,21 +15,24 @@ public class RegisterServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // ======== GET PARAMETERS ========
-        String name = req.getParameter("name");
-        String email = req.getParameter("email");
-        String password = req.getParameter("password");
+        String name            = req.getParameter("name");
+        String email           = req.getParameter("email");
+        String password        = req.getParameter("password");
         String confirmPassword = req.getParameter("confirmPassword");
 
         // ======== BASIC VALIDATION ========
         if (name == null || email == null || password == null ||
                 name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-
-            resp.getWriter().println("All fields are required!");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setContentType("text/plain");
+            resp.getWriter().write("All fields are required!");
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            resp.getWriter().println("Passwords do not match!");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setContentType("text/plain");
+            resp.getWriter().write("Passwords do not match!");
             return;
         }
 
@@ -38,7 +41,9 @@ public class RegisterServlet extends HttpServlet {
 
         // ======== CHECK DUPLICATE EMAIL ========
         if (dao.emailExists(email)) {
-            resp.getWriter().println("Email already registered!");
+            resp.setStatus(HttpServletResponse.SC_CONFLICT);
+            resp.setContentType("text/plain");
+            resp.getWriter().write("Email already registered!");
             return;
         }
 
@@ -53,9 +58,13 @@ public class RegisterServlet extends HttpServlet {
 
         // ======== RESPONSE ========
         if (isSaved) {
-            resp.sendRedirect("index.html"); // go back to login
+            // ✅ FIX: redirect to register-success so JS detects res.redirected
+            //    and the URL is DIFFERENT from index.html (avoids page reload wiping the toast)
+            resp.sendRedirect("register-success");
         } else {
-            resp.getWriter().println("Registration failed!");
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.setContentType("text/plain");
+            resp.getWriter().write("Registration failed. Please try again.");
         }
     }
 }

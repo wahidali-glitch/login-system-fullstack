@@ -1,420 +1,517 @@
-/* ============================================================
-   RESET
-   ============================================================ */
+/* ============================================
+   RESET & BASE
+============================================ */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* ============================================================
-   BODY
-   ============================================================ */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #eef0f4;
-    height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #f8fafc;
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    color: #1e293b;
 }
 
-/* ============================================================
-   MAIN WRAPPER
-   ============================================================ */
-.wrapper {
-    position: relative;
-    width: 860px;
-    height: 530px;
-    background: #ffffff;
-    border-radius: 18px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-    overflow: hidden;
+/* ============================================
+   CONTAINER
+============================================ */
+.container {
     display: flex;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 1000px;
+    width: 90%;
+    /* Use min/max so it never overflows viewport */
+    min-height: 580px;
+    max-height: 95vh;
+    position: relative;
+    animation: containerFadeIn 0.8s ease both;
 }
 
-/* ============================================================
-   FORM PANELS  (left / right halves)
-   ============================================================ */
-.form-panel {
+/* ============================================
+   FORM SECTION (left)
+============================================ */
+.form-section {
+    flex: 1;
+    position: relative;         /* anchor for absolute form-containers */
+    overflow: hidden;
+    /* Let the tallest active form dictate height */
+}
+
+/* ============================================
+   IMAGE / DARK SECTION (right)
+============================================ */
+.image-section {
+    flex: 1;
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.image-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23334155" stroke-width="0.5" opacity="0.3"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.4;
+}
+
+/* ============================================
+   RIGHT PANEL CONTENT
+   display:none/block is the ONLY reliable way.
+   Opacity transitions need a computed "from"
+   state — impossible on display:none elements.
+============================================ */
+.image-content {
+    display: none;
+    width: 100%;
+    padding: 40px;
+    z-index: 1;
+    text-align: center;
+    animation: panelFadeIn 0.5s ease both;
+}
+
+/* Exactly one panel shown per mode */
+.container.login-mode  .login-content,
+.container.signup-mode .signup-content,
+.container.forgot-mode .forgot-content {
+    display: block;
+}
+
+.image-content .panel-icon {
+    font-size: 3.5rem;
+    margin-bottom: 24px;
+    opacity: 0.9;
+}
+
+.image-content h2 {
+    font-size: 2.2rem;
+    margin-bottom: 16px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.image-content p {
+    font-size: 1rem;
+    line-height: 1.7;
+    opacity: 0.75;
+    color: #cbd5e1;
+}
+
+/* Floating decorative shapes */
+.floating-shapes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.floating-shapes::before,
+.floating-shapes::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    animation: float 6s ease-in-out infinite;
+}
+
+.floating-shapes::before {
+    width: 160px;
+    height: 160px;
+    top: 15%;
+    left: -30px;
+    animation-delay: 0s;
+}
+
+.floating-shapes::after {
+    width: 100px;
+    height: 100px;
+    bottom: 15%;
+    right: -20px;
+    animation-delay: 3s;
+}
+
+/* ============================================
+   FORM CONTAINERS — SLIDING SYSTEM
+   All forms stack absolutely inside a fixed-
+   height wrapper. JS drives enter/leave classes.
+============================================ */
+.form-section {
+    overflow: hidden;
+    position: relative;
+}
+
+.form-container {
     position: absolute;
     top: 0;
-    width: 50%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 48px 44px;
-    transition: opacity 0.5s ease, transform 0.55s ease;
-}
-
-/* LOGIN – left side, visible by default */
-.login-panel {
     left: 0;
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: all;
-    z-index: 2;
-}
-
-/* SIGNUP – right side, hidden by default */
-.signup-panel {
-    right: 0;
-    opacity: 0;
-    transform: translateX(40px);
-    pointer-events: none;
-    z-index: 2;
-}
-
-/* --- When signup mode is active --- */
-.wrapper.signup-mode .login-panel {
-    opacity: 0;
-    transform: translateX(-40px);
-    pointer-events: none;
-}
-
-.wrapper.signup-mode .signup-panel {
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: all;
-}
-
-/* ============================================================
-   FORM BOX
-   ============================================================ */
-.form-box {
     width: 100%;
+    padding: 50px 48px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(100%);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
 }
 
-/* Signup is taller – allow scroll */
-.form-box.signup-box {
-    max-height: 460px;
-    overflow-y: auto;
-    padding-right: 4px;
+/* Incoming: slide in from right */
+.form-container.slide-in {
+    transform: translateX(100%);
+    opacity: 0;
 }
 
-.form-box.signup-box::-webkit-scrollbar { width: 3px; }
-.form-box.signup-box::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 3px; }
+/* Active / visible */
+.form-container.active {
+    position: relative;   /* drives section height */
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+}
 
-/* ============================================================
-   TITLES
-   ============================================================ */
+/* Outgoing: slide out to left */
+.form-container.slide-out {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-100%);
+}
+
+/* Reverse: incoming from left (back navigation) */
+.form-container.slide-in-reverse {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+/* Reverse outgoing: slide out to right */
+.form-container.slide-out-reverse {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(100%);
+}
+
+/* ============================================
+   FORM TITLES
+============================================ */
 .form-title {
-    font-size: 30px;
+    font-size: 2.2rem;
     font-weight: 700;
-    color: #1a1a2e;
+    margin-bottom: 8px;
+    color: #0f172a;
     text-align: center;
-    margin-bottom: 6px;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.02em;
 }
 
 .form-subtitle {
-    font-size: 13px;
-    color: #8896ab;
+    color: #64748b;
     text-align: center;
-    margin-bottom: 26px;
-    line-height: 1.5;
+    margin-bottom: 32px;
+    font-size: 0.95rem;
+    line-height: 1.6;
 }
 
-/* ============================================================
+/* ============================================
    FORM GROUPS & INPUTS
-   ============================================================ */
+   Icon is BEFORE the input in HTML so we use
+   sibling CSS — icon always above input in DOM.
+============================================ */
 .form-group {
     position: relative;
-    margin-bottom: 14px;
+    margin-bottom: 20px;
 }
 
+/* Icon sits inside the group, absolutely positioned */
 .form-group > i {
     position: absolute;
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: #a0aec0;
-    font-size: 14px;
+    color: #94a3b8;
+    transition: color 0.3s ease;
+    z-index: 1;
     pointer-events: none;
 }
 
 .form-control {
     width: 100%;
-    padding: 14px 16px 14px 46px;
-    border: 1.5px solid #dde3ee;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #1e293b;
-    background: #f5f7fb;
+    padding: 14px 18px 14px 44px;   /* left padding clears the icon */
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.97rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    background: #fafafa;
     outline: none;
-    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
-}
-
-.form-control::placeholder {
-    color: #b0bcc8;
+    font-weight: 500;
+    color: #1e293b;
 }
 
 .form-control:focus {
     border-color: #3b82f6;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
-/* ============================================================
-   ERROR MESSAGE
-   ============================================================ */
-.error-msg {
-    display: none;
-    background: #fff1f2;
-    border: 1px solid #fecdd3;
-    color: #e11d48;
-    font-size: 13px;
-    text-align: center;
-    border-radius: 7px;
-    padding: 9px 12px;
-    margin-bottom: 12px;
+/* Tint icon blue on focus via JS (kept) */
+.form-control.success { border-color: #10b981; background-color: #f0fdfa; }
+.form-control.error   { border-color: #ef4444; background-color: #fef2f2; }
+
+/* ============================================
+   CHECKBOX
+============================================ */
+.checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    font-size: 0.88rem;
+    color: #64748b;
+    line-height: 1.5;
 }
 
-.error-msg.show {
-    display: block;
+.checkbox-group input[type="checkbox"] {
+    flex-shrink: 0;
+    margin-right: 10px;
+    margin-top: 3px;
+    transform: scale(1.2);
+    accent-color: #3b82f6;
 }
 
-/* ============================================================
-   FORGOT PASSWORD
-   ============================================================ */
-.forgot-row {
-    text-align: right;
-    margin: -4px 0 14px;
-}
-
-.forgot-row a {
-    font-size: 13px;
+.checkbox-group a {
     color: #3b82f6;
     text-decoration: none;
-    transition: color 0.2s;
 }
 
-.forgot-row a:hover {
-    color: #1d4ed8;
-}
+.checkbox-group a:hover { text-decoration: underline; }
 
-/* ============================================================
-   SIGN IN BUTTON
-   ============================================================ */
-.btn-submit {
+/* ============================================
+   BUTTONS
+============================================ */
+.btn-primary {
     width: 100%;
-    padding: 14px;
     background: #3b82f6;
-    color: #ffffff;
+    color: white;
+    padding: 14px;
     border: none;
-    border-radius: 8px;
-    font-size: 15px;
+    border-radius: 12px;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    letter-spacing: 0.3px;
-    transition: background 0.25s, transform 0.15s, box-shadow 0.25s;
-    margin-bottom: 4px;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.btn-submit:hover {
+.btn-primary:hover {
     background: #2563eb;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
 }
 
-.btn-submit:active {
-    transform: translateY(0);
+.btn-primary:active  { transform: translateY(0); }
+.btn-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
     box-shadow: none;
 }
 
-/* ============================================================
-   OR CONTINUE WITH
-   ============================================================ */
-.or-text {
-    text-align: center;
-    font-size: 13px;
-    color: #94a3b8;
-    margin: 16px 0 12px;
+/* ============================================
+   FORGOT PASSWORD LINK
+============================================ */
+.forgot-password {
+    text-align: right;
+    margin-top: -4px;
+    margin-bottom: 16px;
 }
 
-/* ============================================================
-   SOCIAL ICONS  (G / f / Twitter)
-   ============================================================ */
-.social-icons {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin: 18px 0;
-}
-
-.social-icons a {
-    width: 50px;
-    height: 44px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    text-decoration: none;
-    background: #ffffff;
-    transition: border-color 0.2s, transform 0.2s;
-}
-
-.social-icons a:hover {
-    border-color: #3b82f6;
-    transform: translateY(-2px);
-}
-
-.social-icons .fa-google     { color: #ea4335; }
-.social-icons .fa-facebook-f { color: #1877f2; }
-.social-icons .fa-twitter    { color: #1da1f2; }
-
-/* ============================================================
-   SWITCH TEXT
-   ============================================================ */
-.switch-text {
-    text-align: center;
-    font-size: 13px;
-    color: #64748b;
-    margin-top: 4px;
-}
-
-.switch-text a {
+.forgot-password a {
     color: #3b82f6;
-    font-weight: 600;
     text-decoration: none;
-    cursor: pointer;
-    transition: color 0.2s;
+    font-size: 0.88rem;
+    font-weight: 500;
 }
 
-.switch-text a:hover {
-    color: #1d4ed8;
-    text-decoration: underline;
-}
+.forgot-password a:hover { color: #2563eb; text-decoration: underline; }
 
-/* ============================================================
-   DARK SLIDING OVERLAY PANEL  (right side)
-   ============================================================ */
-.overlay-panel {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 50%;
-    height: 100%;
-    background: #0f172a;
-    border-radius: 18px;
-    z-index: 10;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* ============================================
+   SOCIAL LOGIN
+============================================ */
+.social-login { margin-top: 28px; }
+
+.social-title {
     text-align: center;
-    color: #ffffff;
-    overflow: hidden;
-    transition: transform 0.6s ease-in-out;
-}
-
-.wrapper.signup-mode .overlay-panel {
-    transform: translateX(-100%);
-}
-
-/* ============================================================
-   DECORATIVE CIRCLES on dark panel
-   ============================================================ */
-.circle {
-    position: absolute;
-    border-radius: 50%;
-}
-
-.circle-top {
-    width: 260px;
-    height: 260px;
-    background: rgba(255, 255, 255, 0.05);
-    top: -60px;
-    right: -60px;
-}
-
-.circle-mid {
-    width: 180px;
-    height: 180px;
-    background: rgba(255, 255, 255, 0.04);
-    top: 50%;
-    left: -40px;
-    transform: translateY(-50%);
-}
-
-.circle-bottom {
-    width: 130px;
-    height: 130px;
-    background: rgba(255, 255, 255, 0.05);
-    bottom: -40px;
-    right: 30px;
-}
-
-/* ============================================================
-   OVERLAY CONTENT TEXT + BUTTON
-   ============================================================ */
-.overlay-content {
-    position: relative;
-    z-index: 2;
-    padding: 0 40px;
-}
-
-.overlay-content h2 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    line-height: 1.2;
-}
-
-.overlay-content p {
-    font-size: 14px;
     color: #94a3b8;
-    line-height: 1.7;
-    max-width: 220px;
-    margin: 0 auto 26px;
+    margin-bottom: 16px;
+    position: relative;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
-.overlay-btn {
-    display: inline-block;
-    padding: 10px 32px;
-    border: 2px solid #ffffff;
-    background: transparent;
-    color: #ffffff;
-    border-radius: 30px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+.social-title::before,
+.social-title::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 32%;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.social-title::before { left: 0; }
+.social-title::after  { right: 0; }
+
+.social-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.social-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background: white;
     cursor: pointer;
-    transition: background 0.3s, color 0.3s, transform 0.2s;
+    transition: border-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
 }
 
-.overlay-btn:hover {
-    background: #ffffff;
-    color: #0f172a;
-    transform: scale(1.05);
+.social-btn:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* ============================================================
-   RESPONSIVE – mobile
-   ============================================================ */
-@media (max-width: 680px) {
-    .wrapper {
+.social-btn.google   { color: #ea4335; }
+.social-btn.facebook { color: #1877f2; }
+.social-btn.twitter  { color: #1da1f2; }
+
+/* ============================================
+   FORM SWITCH LINK
+============================================ */
+.form-switch {
+    text-align: center;
+    margin-top: 24px;
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.form-switch a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.form-switch a:hover { color: #2563eb; text-decoration: underline; }
+
+/* ============================================
+   LOADING SPINNER
+============================================ */
+.loading { display: none; }
+
+.loading.show {
+    display: inline-block;
+    animation: spin 0.8s linear infinite;
+}
+
+/* ============================================
+   NOTIFICATION TOAST
+============================================ */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    color: white;
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.93rem;
+    z-index: 9999;
+    animation: toastIn 0.4s ease both;
+    max-width: 320px;
+}
+
+.toast.success { background: #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35); }
+.toast.error   { background: #ef4444; box-shadow: 0 10px 25px rgba(239, 68,  68, 0.35); }
+
+/* ============================================
+   KEYFRAME ANIMATIONS
+============================================ */
+@keyframes panelFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes containerFadeIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-18px); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media (max-width: 768px) {
+    body { align-items: flex-start; padding: 16px 0; }
+
+    .container {
+        flex-direction: column;
+        max-width: 420px;
         width: 95%;
-        height: auto;
-        border-radius: 14px;
+        margin: 0 auto;
+        max-height: none;
+        min-height: unset;
+        border-radius: 20px;
     }
 
-    .overlay-panel { display: none; }
-
-    .form-panel {
-        position: static;
-        width: 100%;
-        opacity: 1 !important;
-        transform: none !important;
-        pointer-events: all !important;
-        padding: 36px 26px;
+    .image-section {
+        min-height: 180px;
+        order: -1;            /* right panel moves to top on mobile */
     }
 
-    .login-panel  { display: flex; }
-    .signup-panel { display: none; }
+    .image-content { padding: 24px 20px; }
+    .image-content h2 { font-size: 1.8rem; }
 
-    .wrapper.signup-mode .login-panel  { display: none; }
-    .wrapper.signup-mode .signup-panel { display: flex; }
+    .form-container { padding: 36px 24px; }
+    .form-title     { font-size: 1.9rem; }
+    .social-buttons { flex-direction: column; }
+}
+
+@media (max-width: 420px) {
+    .form-container { padding: 28px 18px; }
+    .form-title     { font-size: 1.7rem; }
 }
