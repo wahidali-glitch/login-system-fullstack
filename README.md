@@ -7,11 +7,13 @@ A full-stack user authentication and management system built using Java Servlets
 ## 🚀 Features
 
 * User Registration & Login
+* * Password encryption (BCrypt)
 * Secure Authentication
-* User Dashboard
 * Update & Delete Users
 * Form Validation (JavaScript)
 * MVC Architecture (Servlets + JSP)
+* CRUD operations (Create, Read, Update, Delete users)
+* Form validation (frontend + backend)
 
 ---
 
@@ -19,7 +21,7 @@ A full-stack user authentication and management system built using Java Servlets
 
 * **Backend:** Java Servlets, JDBC
 * **Frontend:** HTML, CSS, JavaScript, JSP
-* **Database:** MySQL
+* **Database:** DBeaver,Postgresql
 * **Server:** Apache Tomcat
 
 ---
@@ -63,7 +65,6 @@ A full-stack user authentication and management system built using Java Servlets
 
 ## 📌 Future Improvements
 
-* Password encryption (BCrypt)
 * Session management improvements
 * REST API version
 * UI enhancements
