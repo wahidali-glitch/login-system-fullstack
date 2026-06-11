@@ -96,7 +96,6 @@ login-system-fullstack/
 ## 🗺️ Roadmap
 
 - [ ] Session management improvements
-- [ ] REST API version
 - [ ] JWT-based stateless authentication
 - [ ] Role-based access control (RBAC)
 - [ ] UI/UX enhancements
